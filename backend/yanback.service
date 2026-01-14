@@ -1,0 +1,20 @@
+[Unit]
+Description=KindAndDivine 后端服务
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/yanback
+
+# 使用 /root/yanback/.env
+EnvironmentFile=/root/yanback/.env
+
+# 后端二进制路径
+ExecStart=/root/yanback/yanback
+
+Restart=on-failure
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target

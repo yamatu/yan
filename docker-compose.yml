@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  frontend:
+    container_name: kindanddivine-frontend
+    build:
+      context: .              # 用当前目录作为构建上下文
+      dockerfile: Dockerfile  # 用当前目录下的 Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "https://www.kindanddivine.com"
+        NEXT_PUBLIC_SITE_URL: "https://www.kindanddivine.com"
+    ports:
+      # 只在本机暴露 3001，给 Nginx 用 127.0.0.1 访问
+      - "127.0.0.1:3001:3001"
+    environment:
+      NEXT_PUBLIC_API_URL: "https://www.kindanddivine.com"
+      NEXT_PUBLIC_SITE_URL: "https://www.kindanddivine.com"
+    restart: unless-stopped
