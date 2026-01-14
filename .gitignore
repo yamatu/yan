@@ -1,0 +1,48 @@
+# 依赖
+node_modules/
+vendor/
+
+# 构建输出
+.next/
+out/
+dist/
+build/
+
+# 环境变量
+.env
+.env.local
+.env.production
+
+# 日志
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.sum
+
+# 临时文件
+*.tmp
+.cache/
+
+# 打包/二进制/本地数据（避免把产物和数据仓库化）
+*.7z
+*.db
+*:Zone.Identifier
+backend/yanback
