@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/cache"
 	"backend/config"
 	"net/http"
 	"strconv"
@@ -62,6 +63,8 @@ func CreateSocialLink(c *gin.Context) {
 		return
 	}
 
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/social-links*")
+
 	id, _ := result.LastInsertId()
 	c.JSON(http.StatusOK, gin.H{"id": id, "message": "创建成功"})
 }
@@ -87,6 +90,8 @@ func UpdateSocialLink(c *gin.Context) {
 		return
 	}
 
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/social-links*")
+
 	c.JSON(http.StatusOK, gin.H{"message": "更新成功"})
 }
 
@@ -104,6 +109,8 @@ func DeleteSocialLink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "删除失败"})
 		return
 	}
+
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/social-links*")
 
 	c.JSON(http.StatusOK, gin.H{"message": "删除成功"})
 }

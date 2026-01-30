@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/cache"
 	"backend/config"
 	"net/http"
 	"strings" // Added for string manipulation in path generation
@@ -79,6 +80,8 @@ func CreateBlog(c *gin.Context) {
 		return
 	}
 
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/blogs*")
+
 	id, _ := result.LastInsertId()
 	blog.ID = int(id)
 	c.JSON(http.StatusCreated, blog)
@@ -105,6 +108,8 @@ func UpdateBlog(c *gin.Context) {
 		return
 	}
 
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/blogs*")
+
 	c.JSON(http.StatusOK, gin.H{"message": "Blog updated successfully"})
 }
 
@@ -117,6 +122,8 @@ func DeleteBlog(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "删除失败"})
 		return
 	}
+
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/blogs*")
 
 	c.JSON(http.StatusOK, gin.H{"message": "删除成功"})
 }

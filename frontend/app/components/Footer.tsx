@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram, FaYoutube, FaGithub, FaWeixin, FaWeibo } from 'react-icons/fa';
+import { getApiBase } from '../lib/api';
 
 interface SocialLink {
   id: number;
@@ -32,7 +33,8 @@ export default function Footer() {
 
   const fetchSocialLinks = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/social-links`);
+      const baseUrl = getApiBase();
+      const response = await axios.get(`${baseUrl}/api/social-links`);
       setSocialLinks(response.data as SocialLink[]);
     } catch (error) {
       console.error('Failed to fetch social links:', error);

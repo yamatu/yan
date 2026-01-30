@@ -2,6 +2,10 @@ package routes
 
 import (
 	"backend/controllers"
+	"backend/middleware"
+	"os"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,6 +13,15 @@ import (
 func SetupRoutes(r *gin.Engine) {
 	api := r.Group("/api")
 	{
+		// 公开 GET 接口缓存（Redis 可选）
+		ttlSeconds := 300
+		if v := os.Getenv("CACHE_TTL_SECONDS"); v != "" {
+			if parsed, err := strconv.Atoi(v); err == nil && parsed > 0 {
+				ttlSeconds = parsed
+			}
+		}
+		api.Use(middleware.CachePublicGetResponses(time.Duration(ttlSeconds)*time.Second, 1024*1024))
+
 		// 公开接口
 		api.GET("/blogs", controllers.GetBlogs)
 		api.GET("/blogs/:id", controllers.GetBlog)
@@ -37,6 +50,10 @@ func SetupRoutes(r *gin.Engine) {
 		admin := api.Group("/admin")
 		admin.Use(controllers.AuthMiddleware())
 		{
+			// 数据库备份/恢复
+			admin.GET("/db/backup", controllers.BackupDatabase)
+			admin.POST("/db/restore", controllers.RestoreDatabase)
+
 			// 管理员账号管理
 			admin.PUT("/credentials", controllers.UpdateAdminCredentials)
 

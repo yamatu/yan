@@ -9,6 +9,7 @@ import ContactsTab from './components/ContactsTab';
 import CarouselsTab from './components/CarouselsTab';
 import SocialMediaTab from './components/SocialMediaTab';
 import AccountTab from './components/AccountTab';
+import DatabaseTab from './components/DatabaseTab';
 
 export default function AdminPage() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -80,6 +81,7 @@ export default function AdminPage() {
                 {activeTab === 'contacts' && <ContactsTab />}
                 {activeTab === 'carousels' && <CarouselsTab />}
                 {activeTab === 'social' && <SocialMediaTab />}
+                {activeTab === 'database' && <DatabaseTab onLogout={handleLogout} />}
                 {activeTab === 'account' && (
                     <AccountTab
                         currentUsername={currentAdminUsername}

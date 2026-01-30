@@ -1,7 +1,9 @@
 import Link from 'next/link';
-import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Metadata } from 'next';
+import { getApiBase } from '../../lib/api';
+
+export const revalidate = 300;
 
 interface Blog {
   id: number;
@@ -17,55 +19,34 @@ interface Blog {
 }
 
 async function getBlog(slug: string): Promise<Blog | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-  console.log('[Server] Fetching blog with slug:', slug);
-  console.log('[Server] API Base URL:', baseUrl);
+  const baseUrl = getApiBase();
+
+  const fetchBlog = async (url: string): Promise<Blog | null> => {
+    const res = await fetch(url, {
+      next: { revalidate },
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as Blog;
+  };
 
   try {
     // First try to fetch by path
     const pathUrl = `${baseUrl}/api/blogs/by-path/${slug}`;
-    console.log('[Server] Trying by-path API:', pathUrl);
-
-    const response = await axios.get(pathUrl, {
-      validateStatus: (status) => status >= 200 && status < 500 // Accept 200-499
-    });
-
-    console.log('[Server] by-path response status:', response.status);
-
-    if (response.status === 200 && response.data) {
-      const blogData = response.data as Blog;
-      console.log('[Server] by-path SUCCESS, blog found:', blogData.id, blogData.title);
-      return blogData;
-    }
-
-    console.log('[Server] by-path returned non-200 or no data, trying by-id');
+    const blog = await fetchBlog(pathUrl);
+    if (blog) return blog;
   } catch (pathError: any) {
-    console.error('[Server] by-path request failed:', pathError.message);
+    // fall through to by-id
   }
 
   try {
     // If path fails, try ID (for backward compatibility)
     const idUrl = `${baseUrl}/api/blogs/${slug}`;
-    console.log('[Server] Trying by-id API:', idUrl);
-
-    const response = await axios.get(idUrl, {
-      validateStatus: (status) => status >= 200 && status < 500
-    });
-
-    console.log('[Server] by-id response status:', response.status);
-
-    if (response.status === 200 && response.data) {
-      const blogData = response.data as Blog;
-      console.log('[Server] by-id SUCCESS, blog found:', blogData.id, blogData.title);
-      return blogData;
-    }
-
-    console.log('[Server] by-id returned non-200 or no data');
+    const blog = await fetchBlog(idUrl);
+    if (blog) return blog;
   } catch (idError: any) {
-    console.error('[Server] by-id request failed:', idError.message);
+    // ignore
   }
-
-  console.error('[Server] Both attempts failed, returning null');
   return null;
 }
 

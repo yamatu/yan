@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import axios from 'axios';
+import { getApiBase } from '../lib/api';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -27,7 +28,8 @@ export default function ContactPage() {
     setError('');
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/contact`, formData);
+      const baseUrl = getApiBase();
+      await axios.post(`${baseUrl}/api/contact`, formData);
       setSuccess(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {

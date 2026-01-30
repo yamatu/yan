@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Carousel } from "./types";
+import { getApiBase } from "../../lib/api";
 
 export default function CarouselsTab() {
   const [carousels, setCarousels] = useState<Carousel[]>([]);
@@ -24,8 +25,9 @@ export default function CarouselsTab() {
 
   const fetchCarousels = async () => {
     try {
+      const baseUrl = getApiBase();
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/carousels`,
+        `${baseUrl}/api/carousels`,
       );
       setCarousels((response.data as Carousel[]) || []);
     } catch (error) {
@@ -85,8 +87,7 @@ export default function CarouselsTab() {
         return;
       }
 
-      const baseUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+      const baseUrl = getApiBase();
       const payload = {
         ...carouselFormData,
         sort_order: Number(carouselFormData.sort_order) || 0,
@@ -121,7 +122,7 @@ export default function CarouselsTab() {
       const token = localStorage.getItem("admin_token");
       if (!token) return;
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/admin/carousels/${id}`,
+        `${getApiBase()}/api/admin/carousels/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },

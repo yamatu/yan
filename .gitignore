@@ -35,7 +35,6 @@ Thumbs.db
 *.dylib
 *.test
 *.out
-go.sum
 
 # 临时文件
 *.tmp

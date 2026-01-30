@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/cache"
 	"backend/config"
 	"backend/models"
 	"database/sql"
@@ -107,6 +108,8 @@ func CreateCarousel(c *gin.Context) {
 		return
 	}
 
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/carousels*")
+
 	id, _ := result.LastInsertId()
 	payload.ID = int(id)
 
@@ -158,6 +161,8 @@ func UpdateCarousel(c *gin.Context) {
 		return
 	}
 
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/carousels*")
+
 	idInt, _ := strconv.Atoi(id)
 	payload.ID = idInt
 	payload.Position = position
@@ -175,6 +180,8 @@ func DeleteCarousel(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "删除失败"})
 		return
 	}
+
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/carousels*")
 
 	c.JSON(http.StatusOK, gin.H{"message": "删除成功"})
 }

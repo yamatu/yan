@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
+import { getApiBase } from '../lib/api';
 
 interface Solution {
   id: number;
@@ -25,7 +26,8 @@ export default function SolutionPage() {
 
   const fetchSolutions = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/solutions`);
+      const baseUrl = getApiBase();
+      const response = await axios.get(`${baseUrl}/api/solutions`);
       setSolutions((response.data as Solution[]) || []);
     } catch (error) {
       console.error('Failed to fetch solutions:', error);

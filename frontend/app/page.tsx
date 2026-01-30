@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FaMicrochip, FaCube, FaLightbulb, FaRobot } from 'react-icons/fa';
+import { getApiBase } from './lib/api';
 
 interface CarouselItem {
   id?: number;
@@ -70,7 +71,7 @@ export default function Home() {
 
     const fetchSlides = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+        const baseUrl = getApiBase();
 
         const [topRes, bottomRes] = await Promise.all([
           fetch(`${baseUrl}/api/carousels?position=top`),

@@ -1,4 +1,7 @@
 import type { MetadataRoute } from 'next';
+import { getApiBase } from './lib/api';
+
+export const revalidate = 3600;
 
 interface Blog {
   id: number;
@@ -43,11 +46,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+    const apiBase = getApiBase();
 
     const [blogsRes, solutionsRes] = await Promise.all([
-      fetch(`${apiBase}/api/blogs`),
-      fetch(`${apiBase}/api/solutions`),
+      fetch(`${apiBase}/api/blogs`, { next: { revalidate } }),
+      fetch(`${apiBase}/api/solutions`, { next: { revalidate } }),
     ]);
 
     const blogEntries: MetadataRoute.Sitemap = [];
@@ -89,4 +92,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return baseEntries;
   }
 }
-

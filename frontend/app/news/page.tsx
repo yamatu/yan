@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { FaIndustry, FaBoxOpen, FaLightbulb, FaMicrochip } from 'react-icons/fa';
+import { getApiBase } from '../lib/api';
 
 interface News {
   id: number;
@@ -46,7 +47,8 @@ export default function NewsList() {
 
   const fetchNews = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/blogs`);
+      const baseUrl = getApiBase();
+      const response = await axios.get(`${baseUrl}/api/blogs`);
       // Ensure we always set an array, even if API returns null
       setNews(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
@@ -59,7 +61,8 @@ export default function NewsList() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/categories`);
+      const baseUrl = getApiBase();
+      const response = await axios.get(`${baseUrl}/api/categories`);
       const data = response.data as Category[];
       // If API returns empty or null, use default categories
       if (!data || data.length === 0) {

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { SocialLink } from './types';
+import { getApiBase } from '../../lib/api';
 
 export default function SocialMediaTab() {
     const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -20,7 +21,8 @@ export default function SocialMediaTab() {
 
     const fetchSocialLinks = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/social-links`);
+            const baseUrl = getApiBase();
+            const response = await axios.get(`${baseUrl}/api/social-links`);
             setSocialLinks((response.data as SocialLink[]) || []);
         } catch (error) {
             console.error('Failed to fetch social links:', error);
@@ -57,7 +59,7 @@ export default function SocialMediaTab() {
                 return;
             }
 
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            const baseUrl = getApiBase();
             const payload = {
                 ...socialLinkFormData,
                 sort_order: Number(socialLinkFormData.sort_order) || 0,
@@ -93,7 +95,8 @@ export default function SocialMediaTab() {
         try {
             const token = localStorage.getItem('admin_token');
             if (!token) return;
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/admin/social-links/${id}`, {
+            const baseUrl = getApiBase();
+            await axios.delete(`${baseUrl}/api/admin/social-links/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Social link deleted successfully');

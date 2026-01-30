@@ -10,7 +10,7 @@
 DB_HOST=dz.yamatu.xyz
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=Window189.
+DB_PASSWORD=please-change-me
 DB_NAME=b2b_platform
 
 # JWT密钥（生产环境请修改）

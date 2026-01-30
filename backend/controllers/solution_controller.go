@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/cache"
 	"backend/config"
 	"database/sql"
 	"net/http"
@@ -96,6 +97,8 @@ func CreateSolution(c *gin.Context) {
 		return
 	}
 
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/solutions*")
+
 	id, _ := result.LastInsertId()
 	solution.ID = int(id)
 
@@ -122,6 +125,8 @@ func UpdateSolution(c *gin.Context) {
 		return
 	}
 
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/solutions*")
+
 	// The diff changes the response to a message.
 	c.JSON(http.StatusOK, gin.H{"message": "Solution updated successfully"})
 }
@@ -135,6 +140,8 @@ func DeleteSolution(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "删除失败"})
 		return
 	}
+
+	cache.PurgePatterns(c.Request.Context(), "cache:v1:GET:/api/solutions*")
 
 	c.JSON(http.StatusOK, gin.H{"message": "删除成功"})
 }

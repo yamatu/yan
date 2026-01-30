@@ -14,8 +14,10 @@ COPY . .
 # 構建時注入前後端連接相關環境變量
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_SITE_URL
+ARG INTERNAL_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ENV INTERNAL_API_URL=${INTERNAL_API_URL}
 
 # 構建 Next.js 應用（生產環境）
 RUN npm run build
@@ -36,4 +38,3 @@ EXPOSE 3001
 
 # 以生產模式啟動 Next.js，端口為 3001
 CMD ["npm", "run", "start", "--", "-p", "3001"]
-

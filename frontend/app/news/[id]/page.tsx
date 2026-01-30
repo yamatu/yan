@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
+import { getApiBase } from '../../lib/api';
 
 interface News {
   id: number;
@@ -27,7 +28,8 @@ export default function NewsDetail() {
 
   const fetchNews = async (id: string) => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/blogs/${id}`);
+      const baseUrl = getApiBase();
+      const response = await axios.get(`${baseUrl}/api/blogs/${id}`);
       setNews(response.data as News);
     } catch (error) {
       console.error('Failed to fetch news detail:', error);

@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/config"
+	"backend/middleware"
 	"backend/routes"
 	"log"
 	"os"
@@ -20,8 +21,13 @@ func main() {
 	config.InitDB()
 	defer config.CloseDB()
 
+	// 初始化Redis（可选）
+	config.InitRedis()
+	defer config.CloseRedis()
+
 	// 创建Gin路由
 	r := gin.Default()
+	r.MaxMultipartMemory = 64 << 20
 
 	// 从环境变量获取 CORS 允许的源
 	corsOrigins := os.Getenv("CORS_ORIGINS")
@@ -38,6 +44,9 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
+
+	// DB 读写锁（恢复数据库时阻塞其他请求）
+	r.Use(middleware.DBReadLock())
 
 	// 设置路由
 	routes.SetupRoutes(r)

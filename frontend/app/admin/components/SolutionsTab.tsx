@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Solution } from './types';
 import SeoPreview from './SeoPreview';
+import { getApiBase } from '../../lib/api';
 
 export default function SolutionsTab() {
     const [solutions, setSolutions] = useState<Solution[]>([]);
@@ -23,7 +24,8 @@ export default function SolutionsTab() {
 
     const fetchSolutions = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/solutions`);
+            const baseUrl = getApiBase();
+            const response = await axios.get(`${baseUrl}/api/solutions`);
             setSolutions((response.data as Solution[]) || []);
         } catch (error) {
             console.error('Failed to fetch solutions:', error);
@@ -72,7 +74,7 @@ export default function SolutionsTab() {
                 return;
             }
 
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            const baseUrl = getApiBase();
 
             if (editingSolution) {
                 await axios.put(
@@ -104,7 +106,8 @@ export default function SolutionsTab() {
         try {
             const token = localStorage.getItem('admin_token');
             if (!token) return;
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/admin/solutions/${id}`, {
+            const baseUrl = getApiBase();
+            await axios.delete(`${baseUrl}/api/admin/solutions/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Solution deleted successfully');

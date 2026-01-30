@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getApiBase } from '../../lib/api';
 
 interface Blog {
   id: number;
@@ -10,14 +11,14 @@ interface Blog {
 }
 
 export async function generateBlogMetadata(slug: string): Promise<Metadata> {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+  const apiBase = getApiBase();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const normalizedSiteUrl = siteUrl.replace(/\/$/, '');
 
   try {
-    let res = await fetch(`${apiBase}/api/blogs/by-path/${slug}`);
+    let res = await fetch(`${apiBase}/api/blogs/by-path/${slug}`, { next: { revalidate: 300 } });
     if (!res.ok) {
-      res = await fetch(`${apiBase}/api/blogs/${slug}`);
+      res = await fetch(`${apiBase}/api/blogs/${slug}`, { next: { revalidate: 300 } });
       if (!res.ok) throw new Error('Blog not found');
     }
 
@@ -55,4 +56,3 @@ export async function generateBlogMetadata(slug: string): Promise<Metadata> {
     };
   }
 }
-

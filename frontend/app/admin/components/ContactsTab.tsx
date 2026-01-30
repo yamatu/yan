@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Contact } from './types';
+import { getApiBase } from '../../lib/api';
 
 export default function ContactsTab() {
     const [contacts, setContacts] = useState<Contact[]>([]);
@@ -14,7 +15,8 @@ export default function ContactsTab() {
 
     const fetchContacts = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/admin/contacts`, {
+            const baseUrl = getApiBase();
+            const response = await axios.get(`${baseUrl}/api/admin/contacts`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('admin_token')}` }
             });
             setContacts((response.data as Contact[]) || []);
@@ -29,7 +31,8 @@ export default function ContactsTab() {
         try {
             const token = localStorage.getItem('admin_token');
             if (!token) return;
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/admin/contacts/${id}`, {
+            const baseUrl = getApiBase();
+            await axios.delete(`${baseUrl}/api/admin/contacts/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Contact deleted successfully');

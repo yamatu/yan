@@ -11,12 +11,17 @@ import (
 )
 
 var DB *sql.DB
+var DBPath string
 
 func InitDB() {
 	var err error
 
 	// Ensure data directory exists
-	dbPath := "./data.db"
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "./data.db"
+	}
+	DBPath = dbPath
 	dir := filepath.Dir(dbPath)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		os.MkdirAll(dir, 0755)

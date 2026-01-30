@@ -1,6 +1,8 @@
 import Link from 'next/link';
-import axios from 'axios';
 import { Metadata } from 'next';
+import { getApiBase } from '../../lib/api';
+
+export const revalidate = 300;
 
 interface Solution {
   id: number;
@@ -16,21 +18,21 @@ interface Solution {
 }
 
 async function getSolution(slug: string): Promise<Solution | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-  try {
-    // First try to fetch by path
-    const response = await axios.get(`${baseUrl}/api/solutions/by-path/${slug}`);
-    return response.data as Solution;
-  } catch (pathError) {
-    try {
-      // If path fails, try ID (for backward compatibility)
-      const response = await axios.get(`${baseUrl}/api/solutions/${slug}`);
-      return response.data as Solution;
-    } catch (idError) {
-      console.error('Failed to fetch solution:', idError);
-      return null;
-    }
-  }
+  const baseUrl = getApiBase();
+
+  const fetchSolution = async (url: string): Promise<Solution | null> => {
+    const res = await fetch(url, {
+      next: { revalidate },
+      headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as Solution;
+  };
+  const byPath = await fetchSolution(`${baseUrl}/api/solutions/by-path/${slug}`).catch(() => null);
+  if (byPath) return byPath;
+
+  const byId = await fetchSolution(`${baseUrl}/api/solutions/${slug}`).catch(() => null);
+  return byId;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

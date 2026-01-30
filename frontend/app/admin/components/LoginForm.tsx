@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import axios from 'axios';
+import { getApiBase } from '../../lib/api';
 
 interface LoginFormProps {
     onLogin: (token: string, username: string) => void;
@@ -19,7 +20,8 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         setError('');
 
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/admin/login`, {
+            const baseUrl = getApiBase();
+            const response = await axios.post(`${baseUrl}/api/admin/login`, {
                 username,
                 password
             });

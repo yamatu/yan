@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import axios from 'axios';
+import { getApiBase } from '../../lib/api';
 
 interface AccountTabProps {
     currentUsername: string;
@@ -21,8 +22,10 @@ export default function AccountTab({ currentUsername, onLogout }: AccountTabProp
             const token = localStorage.getItem('admin_token');
             if (!token) return;
 
+            const baseUrl = getApiBase();
+
             await axios.put(
-                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/admin/credentials`,
+                `${baseUrl}/api/admin/credentials`,
                 {
                     current_password: accountForm.currentPassword,
                     new_username: accountForm.newUsername,

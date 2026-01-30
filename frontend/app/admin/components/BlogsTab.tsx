@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Blog } from './types';
 import SeoPreview from './SeoPreview';
+import { getApiBase } from '../../lib/api';
 
 export default function BlogsTab() {
     const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -21,7 +22,8 @@ export default function BlogsTab() {
 
     const fetchBlogs = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/blogs`);
+            const baseUrl = getApiBase();
+            const response = await axios.get(`${baseUrl}/api/blogs`);
             setBlogs((response.data as Blog[]) || []);
         } catch (error) {
             console.error('Failed to fetch blogs:', error);
@@ -70,7 +72,7 @@ export default function BlogsTab() {
                 return;
             }
 
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+            const baseUrl = getApiBase();
 
             if (editingBlog) {
                 await axios.put(
@@ -102,7 +104,8 @@ export default function BlogsTab() {
         try {
             const token = localStorage.getItem('admin_token');
             if (!token) return;
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/api/admin/blogs/${id}`, {
+            const baseUrl = getApiBase();
+            await axios.delete(`${baseUrl}/api/admin/blogs/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Blog deleted successfully');

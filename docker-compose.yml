@@ -1,18 +1,55 @@
 version: "3.9"
 
 services:
+  redis:
+    container_name: kindanddivine-redis
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  backend:
+    container_name: kindanddivine-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      PORT: "8080"
+      DB_PATH: "/data/data.db"
+      GIN_MODE: "release"
+      CORS_ORIGINS: "http://localhost:3001"
+      REDIS_ADDR: "redis:6379"
+      REDIS_DB: "0"
+      CACHE_TTL_SECONDS: "300"
+    volumes:
+      - backend_data:/data
+    depends_on:
+      - redis
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+
   frontend:
     container_name: kindanddivine-frontend
     build:
-      context: .              # 用当前目录作为构建上下文
-      dockerfile: Dockerfile  # 用当前目录下的 Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: "https://www.kindanddivine.com"
-        NEXT_PUBLIC_SITE_URL: "https://www.kindanddivine.com"
-    ports:
-      # 只在本机暴露 3001，给 Nginx 用 127.0.0.1 访问
-      - "127.0.0.1:3001:3001"
+        # Leave empty to use same-origin `/api` in the browser.
+        NEXT_PUBLIC_API_URL: ""
+        NEXT_PUBLIC_SITE_URL: "http://localhost:3001"
+        INTERNAL_API_URL: "http://backend:8080"
     environment:
-      NEXT_PUBLIC_API_URL: "https://www.kindanddivine.com"
-      NEXT_PUBLIC_SITE_URL: "https://www.kindanddivine.com"
+      NEXT_PUBLIC_API_URL: ""
+      NEXT_PUBLIC_SITE_URL: "http://localhost:3001"
+      INTERNAL_API_URL: "http://backend:8080"
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3001:3001"
     restart: unless-stopped
+
+volumes:
+  redis_data:
+  backend_data:
