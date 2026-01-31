@@ -17,6 +17,8 @@ export default function CarouselsTab() {
     sort_order: 0,
     position: "top" as "top" | "bottom",
     rotation: 0,
+    image_width: 0,
+    image_height: 0,
   });
 
   useEffect(() => {
@@ -45,6 +47,8 @@ export default function CarouselsTab() {
       sort_order: 0,
       position: "top",
       rotation: 0,
+      image_width: 0,
+      image_height: 0,
     });
     setIsCreatingCarousel(true);
     setEditingCarousel(null);
@@ -61,6 +65,8 @@ export default function CarouselsTab() {
       sort_order: item.sort_order,
       position: item.position,
       rotation: item.rotation ?? 0,
+      image_width: item.image_width ?? 0,
+      image_height: item.image_height ?? 0,
     });
   };
 
@@ -74,6 +80,8 @@ export default function CarouselsTab() {
       sort_order: carousel.sort_order,
       position: carousel.position,
       rotation: carousel.rotation ?? 0,
+      image_width: carousel.image_width ?? 0,
+      image_height: carousel.image_height ?? 0,
     });
     setIsCreatingCarousel(false);
   };
@@ -91,6 +99,8 @@ export default function CarouselsTab() {
       const payload = {
         ...carouselFormData,
         sort_order: Number(carouselFormData.sort_order) || 0,
+        image_width: Number(carouselFormData.image_width) || 0,
+        image_height: Number(carouselFormData.image_height) || 0,
       };
 
       if (editingCarousel) {
@@ -320,6 +330,44 @@ export default function CarouselsTab() {
                   <p className="mt-1 text-xs text-gray-400">
                     默认正方形展示，如手机拍照方向不对可以在这里旋转图片。
                   </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Image Max Width (px)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={carouselFormData.image_width}
+                    onChange={(e) =>
+                      setCarouselFormData({
+                        ...carouselFormData,
+                        image_width: Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-gray-900 placeholder-gray-400"
+                  />
+                  <p className="mt-1 text-xs text-gray-400">0 = auto</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Image Max Height (px)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={carouselFormData.image_height}
+                    onChange={(e) =>
+                      setCarouselFormData({
+                        ...carouselFormData,
+                        image_height: Number(e.target.value),
+                      })
+                    }
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-gray-900 placeholder-gray-400"
+                  />
+                  <p className="mt-1 text-xs text-gray-400">0 = auto</p>
                 </div>
               </div>
 

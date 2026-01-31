@@ -42,6 +42,8 @@ export interface Carousel {
   sort_order: number;
   position: "top" | "bottom";
   rotation: number;
+  image_width?: number;
+  image_height?: number;
   created_at: string;
   updated_at: string;
 }

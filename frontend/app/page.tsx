@@ -13,6 +13,8 @@ interface CarouselItem {
   description: string;
   position?: string;
   rotation?: number;
+  image_width?: number;
+  image_height?: number;
 }
 
 const DEFAULT_SLIDES: CarouselItem[] = [
@@ -67,6 +69,8 @@ export default function Home() {
         description: item.description || '',
         position: item.position,
         rotation: item.rotation ?? 0,
+        image_width: item.image_width ?? 0,
+        image_height: item.image_height ?? 0,
       }));
 
     const fetchSlides = async () => {
@@ -383,16 +387,28 @@ export default function Home() {
                 {marqueeSlides.map((slide, index) => (
                   <div
                     key={`${slide.id || slide.title}-${index}`}
-                    className="rounded-xl overflow-hidden border border-[rgba(0,188,212,0.25)] bg-[var(--secondary-blue)] shadow-[0_5px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_20px_rgba(0,188,212,0.25)] transition-all duration-300"
+                    className="group rounded-xl overflow-hidden border border-[rgba(0,188,212,0.25)] bg-[var(--secondary-blue)] shadow-[0_5px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_20px_rgba(0,188,212,0.25)] transition-all duration-300"
                     style={{ minWidth: `${MARQUEE_ITEM_WIDTH}px` }}
                   >
                     <div className="relative w-full overflow-hidden bg-[#020617]" style={{ paddingTop: '100%' }}>
-                      <img
-                        src={slide.image_url}
-                        alt={slide.alt_text || slide.title}
-                        className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 hover:scale-105"
-                        style={{ transform: `rotate(${slide.rotation ?? 0}deg)`, transformOrigin: 'center center' }}
-                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div
+                          className="transition-transform duration-300 group-hover:scale-105"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            maxWidth: slide.image_width && slide.image_width > 0 ? `${slide.image_width}px` : '100%',
+                            maxHeight: slide.image_height && slide.image_height > 0 ? `${slide.image_height}px` : '100%',
+                          }}
+                        >
+                          <img
+                            src={slide.image_url}
+                            alt={slide.alt_text || slide.title}
+                            className="w-full h-full object-contain"
+                            style={{ transform: `rotate(${slide.rotation ?? 0}deg)`, transformOrigin: 'center center' }}
+                          />
+                        </div>
+                      </div>
                     </div>
                     <div className="p-5 space-y-2 text-left">
                       <h4 className="font-semibold text-[var(--text-heading)] uppercase text-sm tracking-wide">
@@ -413,15 +429,27 @@ export default function Home() {
               {bottomSlides.map((slide, index) => (
                 <div
                   key={index}
-                  className="rounded-xl overflow-hidden border border-[rgba(0,188,212,0.25)] bg-[var(--secondary-blue)] shadow-[0_5px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_20px_rgba(0,188,212,0.25)] transition-all duration-300"
+                  className="group rounded-xl overflow-hidden border border-[rgba(0,188,212,0.25)] bg-[var(--secondary-blue)] shadow-[0_5px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_20px_rgba(0,188,212,0.25)] transition-all duration-300"
                 >
                   <div className="relative w-full overflow-hidden bg-[#020617]" style={{ paddingTop: '100%' }}>
-                    <img
-                      src={slide.image_url}
-                      alt={slide.alt_text || slide.title}
-                      className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 hover:scale-105"
-                      style={{ transform: `rotate(${slide.rotation ?? 0}deg)`, transformOrigin: 'center center' }}
-                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div
+                        className="transition-transform duration-300 group-hover:scale-105"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          maxWidth: slide.image_width && slide.image_width > 0 ? `${slide.image_width}px` : '100%',
+                          maxHeight: slide.image_height && slide.image_height > 0 ? `${slide.image_height}px` : '100%',
+                        }}
+                      >
+                        <img
+                          src={slide.image_url}
+                          alt={slide.alt_text || slide.title}
+                          className="w-full h-full object-contain"
+                          style={{ transform: `rotate(${slide.rotation ?? 0}deg)`, transformOrigin: 'center center' }}
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className="p-5 space-y-2 text-left">
                     <h4 className="font-semibold text-[var(--text-heading)] uppercase text-sm tracking-wide">

@@ -12,7 +12,9 @@ type Carousel struct {
 	Description string    `json:"description"`
 	SortOrder   int       `json:"sort_order"`
 	Position    string    `json:"position"`
-	Rotation    int       `json:"rotation"` // 图片旋转角度：0、90、180、270
+	Rotation    int       `json:"rotation"`     // 图片旋转角度：0、90、180、270
+	ImageWidth  int       `json:"image_width"`  // 图片在前端展示的最大宽度(px)，0 表示自动
+	ImageHeight int       `json:"image_height"` // 图片在前端展示的最大高度(px)，0 表示自动
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

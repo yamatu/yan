@@ -23,14 +23,14 @@ func GetCarousels(c *gin.Context) {
 	// 注意：SQL 里增加 rotation 字段，需确保数据库表 carousels 已有该列
 	if position != "" {
 		rows, err = config.DB.Query(`
-			SELECT id, title, image_url, alt_text, description, sort_order, position, rotation, created_at, updated_at
+			SELECT id, title, image_url, alt_text, description, sort_order, position, rotation, image_width, image_height, created_at, updated_at
 			FROM carousels
 			WHERE position = ?
 			ORDER BY sort_order ASC, created_at DESC
 		`, position)
 	} else {
 		rows, err = config.DB.Query(`
-			SELECT id, title, image_url, alt_text, description, sort_order, position, rotation, created_at, updated_at
+			SELECT id, title, image_url, alt_text, description, sort_order, position, rotation, image_width, image_height, created_at, updated_at
 			FROM carousels
 			ORDER BY sort_order ASC, created_at DESC
 		`)
@@ -53,6 +53,8 @@ func GetCarousels(c *gin.Context) {
 			&item.SortOrder,
 			&item.Position,
 			&item.Rotation,
+			&item.ImageWidth,
+			&item.ImageHeight,
 			&item.CreatedAt,
 			&item.UpdatedAt,
 		); err != nil {
@@ -88,13 +90,17 @@ func CreateCarousel(c *gin.Context) {
 		payload.Rotation = 0
 	}
 
+	// 图片尺寸防御性处理：0 表示不限制；否则限制为 1..2000
+	payload.ImageWidth = normalizePx(payload.ImageWidth)
+	payload.ImageHeight = normalizePx(payload.ImageHeight)
+
 	// 默认位置为顶部轮播图
 	if payload.Position == "" {
 		payload.Position = "top"
 	}
 
 	result, err := config.DB.Exec(
-		"INSERT INTO carousels (title, image_url, alt_text, description, sort_order, position, rotation) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO carousels (title, image_url, alt_text, description, sort_order, position, rotation, image_width, image_height) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		payload.Title,
 		payload.ImageURL,
 		payload.AltText,
@@ -102,6 +108,8 @@ func CreateCarousel(c *gin.Context) {
 		payload.SortOrder,
 		payload.Position,
 		payload.Rotation,
+		payload.ImageWidth,
+		payload.ImageHeight,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "创建失败: " + err.Error()})
@@ -145,8 +153,11 @@ func UpdateCarousel(c *gin.Context) {
 		rotation = 0
 	}
 
+	imageWidth := normalizePx(payload.ImageWidth)
+	imageHeight := normalizePx(payload.ImageHeight)
+
 	_, err := config.DB.Exec(
-		"UPDATE carousels SET title = ?, image_url = ?, alt_text = ?, description = ?, sort_order = ?, position = ?, rotation = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+		"UPDATE carousels SET title = ?, image_url = ?, alt_text = ?, description = ?, sort_order = ?, position = ?, rotation = ?, image_width = ?, image_height = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
 		payload.Title,
 		payload.ImageURL,
 		payload.AltText,
@@ -154,6 +165,8 @@ func UpdateCarousel(c *gin.Context) {
 		payload.SortOrder,
 		position,
 		rotation,
+		imageWidth,
+		imageHeight,
 		id,
 	)
 	if err != nil {
@@ -167,8 +180,24 @@ func UpdateCarousel(c *gin.Context) {
 	payload.ID = idInt
 	payload.Position = position
 	payload.Rotation = rotation
+	payload.ImageWidth = imageWidth
+	payload.ImageHeight = imageHeight
 
 	c.JSON(http.StatusOK, payload)
+}
+
+func normalizePx(v int) int {
+	if v <= 0 {
+		return 0
+	}
+	if v < 1 {
+		return 1
+	}
+	// clamp to a reasonable range
+	if v > 2000 {
+		return 2000
+	}
+	return v
 }
 
 // DeleteCarousel 删除轮播图（管理员）

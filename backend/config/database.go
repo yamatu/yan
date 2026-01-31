@@ -48,6 +48,9 @@ func InitDB() {
 
 	// 迁移轮播图 rotation 字段（图片旋转角度）
 	migrateCarouselRotation()
+
+	// 迁移轮播图图片显示尺寸字段
+	migrateCarouselImageSize()
 }
 
 func migrateSEO() {
@@ -83,6 +86,22 @@ func migrateCarouselRotation() {
 		log.Printf("Migration note for carousels.rotation (might be expected if column exists): %v", err)
 	} else {
 		log.Println("Executed migration:", sqlStmt)
+	}
+}
+
+// migrateCarouselImageSize 为已有的 carousels 表增加 image_width / image_height 字段
+// 0 表示自动（不限制），>0 表示前端展示时的最大像素限制。
+func migrateCarouselImageSize() {
+	stmts := []string{
+		"ALTER TABLE carousels ADD COLUMN image_width INTEGER NOT NULL DEFAULT 0;",
+		"ALTER TABLE carousels ADD COLUMN image_height INTEGER NOT NULL DEFAULT 0;",
+	}
+	for _, sqlStmt := range stmts {
+		if _, err := DB.Exec(sqlStmt); err != nil {
+			log.Printf("Migration note for carousels image size (might be expected if column exists): %v", err)
+		} else {
+			log.Println("Executed migration:", sqlStmt)
+		}
 	}
 }
 
@@ -201,6 +220,8 @@ func createTables() {
 		sort_order INTEGER DEFAULT 0,
 		position TEXT NOT NULL DEFAULT 'top',
 		rotation INTEGER NOT NULL DEFAULT 0,
+		image_width INTEGER NOT NULL DEFAULT 0,
+		image_height INTEGER NOT NULL DEFAULT 0,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);
