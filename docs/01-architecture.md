@@ -8,8 +8,8 @@
 
 ## 端口与访问方式（默认）
 
-- 前端：`http://localhost:3001`
-- 后端：`http://localhost:8080`（Compose 里也会暴露到本机，便于调试）
+- 前端：`http://localhost:3002`
+- 后端：`http://localhost:8081`（Compose 里也会暴露到本机，便于调试）
 - Redis：只在容器网络内使用（如需本机直连可自行映射端口）
 
 ## 数据流

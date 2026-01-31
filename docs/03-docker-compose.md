@@ -10,9 +10,9 @@ docker compose up --build
 
 ## 默认服务
 
-- `frontend`：Next.js，暴露 `127.0.0.1:3001`
-- `backend`：Go/Gin，暴露 `127.0.0.1:8080`
-- `redis`：后端缓存使用
+- `frontend`：Next.js，暴露 `127.0.0.1:3002`
+- `backend`：Go/Gin，暴露 `127.0.0.1:8081`
+- `redis`：后端缓存使用（默认映射到 `127.0.0.1:6380`）
 
 ## 数据持久化
 

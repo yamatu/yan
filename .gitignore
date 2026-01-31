@@ -45,3 +45,6 @@ Thumbs.db
 *.db
 *:Zone.Identifier
 backend/yanback
+
+# Nginx (keep out of repo)
+nginx*.conf
