@@ -90,7 +90,10 @@ func migrateCarouselRotation() {
 }
 
 // migrateCarouselImageSize 为已有的 carousels 表增加 image_width / image_height 字段
-// 0 表示自动（不限制），>0 表示前端展示时的最大像素限制。
+//
+// 这里用于主页 Our Solutions 卡片容器尺寸：
+// - 0 表示默认（前端会回退到默认宽度/正方形）
+// - >0 表示像素
 func migrateCarouselImageSize() {
 	stmts := []string{
 		"ALTER TABLE carousels ADD COLUMN image_width INTEGER NOT NULL DEFAULT 0;",

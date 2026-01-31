@@ -334,7 +334,7 @@ export default function CarouselsTab() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Image Max Width (px)
+                    Card Width (px)
                   </label>
                   <input
                     type="number"
@@ -348,12 +348,12 @@ export default function CarouselsTab() {
                     }
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-gray-900 placeholder-gray-400"
                   />
-                  <p className="mt-1 text-xs text-gray-400">0 = auto</p>
+                  <p className="mt-1 text-xs text-gray-400">0 = default size (homepage Our Solutions)</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Image Max Height (px)
+                    Card Height (px)
                   </label>
                   <input
                     type="number"
@@ -367,7 +367,7 @@ export default function CarouselsTab() {
                     }
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-gray-900 placeholder-gray-400"
                   />
-                  <p className="mt-1 text-xs text-gray-400">0 = auto</p>
+                  <p className="mt-1 text-xs text-gray-400">0 = square (same as width)</p>
                 </div>
               </div>
 

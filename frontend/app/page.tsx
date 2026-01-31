@@ -119,24 +119,24 @@ export default function Home() {
 
   // 底部 Solutions 连续滚动（展示 4 张，>4 时流畅循环；悬停暂停）
   useEffect(() => {
-    const slidesCount = bottomSlides.length;
-    const slidesToShow = Math.min(slidesCount, 4);
-    const maxSlideIndex = Math.max(slidesCount - slidesToShow, 0);
+      const slidesCount = bottomSlides.length;
+      const slidesToShow = Math.min(slidesCount, 4);
+      const maxSlideIndex = Math.max(slidesCount - slidesToShow, 0);
 
     // 连续滚动：仅当大于 4 张且未暂停时启用
-    if (!bottomPaused && slidesCount > 4) {
-      let rafId: number;
-      const SPEED = 0.25; // px/frame
-      const ITEM_FULL_WIDTH = 260 + 16; // 卡片宽 + 间距
-      const totalWidth = slidesCount * ITEM_FULL_WIDTH;
+      if (!bottomPaused && slidesCount > 4) {
+        let rafId: number;
+        const SPEED = 0.25; // px/frame
+        const totalWidth = bottomSlides.reduce((acc, slide) => acc + getCardWidth(slide) + MARQUEE_ITEM_GAP, 0);
 
       const step = () => {
-        setBottomOffset((prev) => {
-          const next = prev + SPEED;
-          return next >= totalWidth ? next - totalWidth : next;
-        });
-        rafId = requestAnimationFrame(step);
-      };
+          setBottomOffset((prev) => {
+            if (totalWidth <= 0) return 0;
+            const next = prev + SPEED;
+            return next >= totalWidth ? next - totalWidth : next;
+          });
+          rafId = requestAnimationFrame(step);
+        };
 
       rafId = requestAnimationFrame(step);
       return () => cancelAnimationFrame(rafId);
@@ -205,6 +205,17 @@ export default function Home() {
   const MARQUEE_ITEM_WIDTH = 260;
   const MARQUEE_ITEM_GAP = 16;
   const marqueeSlides = useMarquee ? [...bottomSlides, ...bottomSlides] : bottomSlides;
+
+  const getCardWidth = (slide: CarouselItem): number => {
+    const w = slide.image_width ?? 0;
+    return w > 0 ? w : MARQUEE_ITEM_WIDTH;
+  };
+
+  const getCardHeight = (slide: CarouselItem): number => {
+    const h = slide.image_height ?? 0;
+    if (h > 0) return h;
+    return getCardWidth(slide);
+  };
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -388,19 +399,11 @@ export default function Home() {
                   <div
                     key={`${slide.id || slide.title}-${index}`}
                     className="group rounded-xl overflow-hidden border border-[rgba(0,188,212,0.25)] bg-[var(--secondary-blue)] shadow-[0_5px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_20px_rgba(0,188,212,0.25)] transition-all duration-300"
-                    style={{ minWidth: `${MARQUEE_ITEM_WIDTH}px` }}
+                    style={{ width: `${getCardWidth(slide)}px`, minWidth: `${getCardWidth(slide)}px` }}
                   >
-                    <div className="relative w-full overflow-hidden bg-[#020617]" style={{ paddingTop: '100%' }}>
+                    <div className="relative w-full overflow-hidden bg-[#020617]" style={{ height: `${getCardHeight(slide)}px` }}>
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div
-                          className="transition-transform duration-300 group-hover:scale-105"
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            maxWidth: slide.image_width && slide.image_width > 0 ? `${slide.image_width}px` : '100%',
-                            maxHeight: slide.image_height && slide.image_height > 0 ? `${slide.image_height}px` : '100%',
-                          }}
-                        >
+                        <div className="w-full h-full transition-transform duration-300 group-hover:scale-105">
                           <img
                             src={slide.image_url}
                             alt={slide.alt_text || slide.title}
@@ -425,23 +428,16 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-items-center">
               {bottomSlides.map((slide, index) => (
                 <div
                   key={index}
                   className="group rounded-xl overflow-hidden border border-[rgba(0,188,212,0.25)] bg-[var(--secondary-blue)] shadow-[0_5px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_0_20px_rgba(0,188,212,0.25)] transition-all duration-300"
+                  style={{ width: `${getCardWidth(slide)}px` }}
                 >
-                  <div className="relative w-full overflow-hidden bg-[#020617]" style={{ paddingTop: '100%' }}>
+                  <div className="relative w-full overflow-hidden bg-[#020617]" style={{ height: `${getCardHeight(slide)}px` }}>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div
-                        className="transition-transform duration-300 group-hover:scale-105"
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          maxWidth: slide.image_width && slide.image_width > 0 ? `${slide.image_width}px` : '100%',
-                          maxHeight: slide.image_height && slide.image_height > 0 ? `${slide.image_height}px` : '100%',
-                        }}
-                      >
+                      <div className="w-full h-full transition-transform duration-300 group-hover:scale-105">
                         <img
                           src={slide.image_url}
                           alt={slide.alt_text || slide.title}
